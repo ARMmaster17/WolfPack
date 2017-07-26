@@ -4,7 +4,12 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"strings"
 	"time"
+
+	"fmt"
+
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kardianos/osext"
@@ -19,23 +24,33 @@ func controllerhome(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
 		"hostname":    testnode.identifier,
 		"lastupdated": time.Now().String(),
+		"wolfcount":   5,
 	})
 }
 
 func main() {
+	portCfg := os.Getenv("port")
+	if portCfg == "" {
+		log.Fatalln("$PORT must be set.")
+	}
+	hostCfg := os.Getenv("host")
+	if hostCfg == "" {
+		log.Fatalln("$HOST must be set.")
+	}
+	fmt.Printf("Web GUI available at %v:%v\n", hostCfg, portCfg)
 	// Need to use release mode because of issue #119 on gin-gonic/gin.
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	// Grab our current working directory.
 	wd, _ := osext.ExecutableFolder()
-	// This is needed for debugging because VSCode likes to be difficult.
-	//wd := path.Join("C:", "Users", "wordm", "go", "src", "WolfPack")
 	// Preload all templates into memory.
 	router.LoadHTMLGlob(path.Join(wd, "templates", "*"))
 	// Assign base route to home controller.
 	router.GET("/", controllerhome)
 	// Everything is set up, let gin do its thing.
-	router.Run(":8080")
+	//router.Run(":" + string(*portPtr))
+	err := router.Run(strings.Join([]string{hostCfg, ":", portCfg}, ""))
+	log.Fatalf("Gin error: %v\n", err)
 }
 
 type node struct {
