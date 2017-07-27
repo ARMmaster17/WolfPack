@@ -29,6 +29,22 @@ func controllerhome(c *gin.Context) {
 }
 
 func main() {
+	//////////////////////////////
+	// DEBUG: in the future this will
+	// happen on a separate machine over UDP
+	log.Println("Initializing message exchange")
+	outbound := make(chan string)
+	inbound := make(chan string)
+	log.Println("Launching slave client")
+	go wolf(outbound, inbound)
+	// Verify client is up
+	log.Println("Testing connection")
+	outbound <- "ping"
+	inbuffer := <-inbound
+	if inbuffer == "pong" {
+		log.Println("Slave unit connection sucessful")
+	}
+	//////////////////////////////
 	portCfg := os.Getenv("port")
 	if portCfg == "" {
 		log.Fatalln("$PORT must be set.")
@@ -48,9 +64,17 @@ func main() {
 	// Assign base route to home controller.
 	router.GET("/", controllerhome)
 	// Everything is set up, let gin do its thing.
-	//router.Run(":" + string(*portPtr))
 	err := router.Run(strings.Join([]string{hostCfg, ":", portCfg}, ""))
 	log.Fatalf("Gin error: %v\n", err)
+}
+
+func wolf(in chan string, out chan string) {
+	for {
+		msg := <-in
+		if msg == "ping" {
+			out <- "pong"
+		}
+	}
 }
 
 type node struct {
