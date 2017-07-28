@@ -7,11 +7,11 @@
             "request": "launch",
             "mode": "debug",
             "remotePath": "",
-            "port": 2345,
-            "host": "127.0.0.1",
             "program": "${workspaceRoot}",
-            "env": {"PORT": "8080",
-                    "HOST": "127.0.0.1"},
+            "env": {"WOLF_WEBPORT": "8080",
+                    "WOLF_WEBHOST": "127.0.0.1",
+                    "WOLF_MSXPORT": 10000
+                    },
             "args": [],
             "showLog": true
         }
