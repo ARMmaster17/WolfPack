@@ -1,9 +1,10 @@
 <html>
     <body>
         <h1>Pack Status Page</h1>
-        <p>Last updated at {{.lastupdated}}</p>
-        <hr>
-        <p><b>Alpha:</b> <i>{{.hostname}}</i></p>
-        <p><b>Workers:</b> <i>{{.wolfcount}}</i></p>
+        <ul>
+            {{ range .packlist }}
+                <li>{{ . }}</li>
+            {{ end }}
+        </ul>
     </body>
 </html>

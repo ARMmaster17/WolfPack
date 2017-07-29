@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 	"path"
 	"strings"
 	"time"
@@ -12,7 +11,13 @@ import (
 	"github.com/kardianos/osext"
 )
 
-func launchWebGui(webhostCfg string, webportCfg string) {
+var webInChannel chan string
+var webOutChannel chan string
+
+func launchWebGui(webhostCfg string, webportCfg string, in chan string, out chan string) {
+	// Set up channel communication.
+	webInChannel = in
+	webOutChannel = out
 	// Need to use release mode because of issue #119 on gin-gonic/gin.
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
@@ -30,14 +35,22 @@ func launchWebGui(webhostCfg string, webportCfg string) {
 }
 
 func controllerhome(c *gin.Context) {
-	// Grab the machine hostname.
-	hn, _ := os.Hostname()
-	// Test the node struct by utilizing it in view/model bindings.
-	testnode := node{identifier: hn, uri: "http://localhost:8080/", lastseenat: time.Now()}
 	// Push out the view with given model information.
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
-		"hostname":    testnode.identifier,
-		"lastupdated": time.Now().String(),
-		"wolfcount":   5,
+		"packlist": getNodeList(),
 	})
+}
+
+func getNodeList() []node {
+	var result []node
+	webOutChannel <- "LIST PACK"
+	rawResult := <-webInChannel
+	nodeArray := strings.Split(rawResult, ",")
+	for n := range nodeArray {
+		ndta := strings.Split(nodeArray[n], "|")
+		lsa, _ := time.Parse(time.RFC3339, ndta[2])
+		nd := node{identifier: ndta[0], uri: ndta[1], lastseenat: lsa}
+		result = append(result, nd)
+	}
+	return result
 }
