@@ -28,7 +28,9 @@ func launchWebGui(webhostCfg string, webportCfg string, in chan string, out chan
 	// Preload all templates into memory.
 	router.LoadHTMLGlob(path.Join(wd, "templates", "*"))
 	// Assign base route to home controller.
-	router.GET("/", controllerhome)
+	router.GET("/", controllerHome)
+	// Node actions.
+	router.GET("/actions/nodes/banish/:cname", controllerBanish)
 	// Notify user of connection credentials to web GUI.
 	log.Printf("Web GUI available at %v:%v\n", webhostCfg, webportCfg)
 	// Everything is set up, let gin do its thing.
@@ -37,12 +39,18 @@ func launchWebGui(webhostCfg string, webportCfg string, in chan string, out chan
 	log.Fatalf("Gin error: %v\n", err)
 }
 
-func controllerhome(c *gin.Context) {
+func controllerHome(c *gin.Context) {
 
 	// Push out the view with given model information.
 	c.HTML(http.StatusOK, "index.tmpl", gin.H{
 		"packlist": getNodeList(),
 	})
+}
+
+func controllerBanish(c *gin.Context) {
+	webOutChannel <- strings.Join([]string{"SERVER BANISH ", c.Param("cname")}, "")
+	time.Sleep(250 * time.Millisecond)
+	c.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
 func getNodeList() []node {

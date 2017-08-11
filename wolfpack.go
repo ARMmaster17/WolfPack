@@ -4,23 +4,6 @@ import "time"
 import "log"
 
 func main() {
-	//////////////////////////////
-	// DEBUG: in the future this will
-	// happen on a separate machine over UDP
-	//log.Println("Initializing message exchange")
-	//outbound := make(chan string)
-	//inbound := make(chan string)
-	//log.Println("Launching slave client")
-	//go wolf(outbound, inbound)
-	// Verify client is up
-	//log.Println("Testing connection")
-	//outbound <- "ping"
-	//inbuffer := <-inbound
-	//if inbuffer == "pong" {
-	//	log.Println("Slave unit connection sucessful")
-	//}
-	//////////////////////////////
-
 	// Load in environment variables.
 	log.Println("Loading environment variables...")
 	envVars := loadEnvironmentVars()

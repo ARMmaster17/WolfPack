@@ -17,5 +17,9 @@ func wolf(port string) {
 
 	_, _ = Conn.Write([]byte("CLIENT JOIN testnode"))
 	time.Sleep(4 * time.Second)
-	_, _ = Conn.Write([]byte("CLIENT LEAVE testnode"))
+	for {
+		// Infinitely sleep for...reasons.
+		time.Sleep(1 * time.Second)
+	}
+	//_, _ = Conn.Write([]byte("CLIENT LEAVE testnode"))
 }

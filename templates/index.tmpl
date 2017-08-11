@@ -3,7 +3,7 @@
         <h1>Pack Status Page</h1>
         <ul>
             {{ range .packlist }}
-                <li><a href="{{ .URI }}">{{ .Identifier }} {{ .Lastseenat }}</a></li>
+                <li><a href="{{ .URI }}">{{ .Identifier }} {{ .Lastseenat }}</a> | <a href="/actions/nodes/banish/{{ .Identifier }}">Banish</a></li>
             {{ end }}
         </ul>
     </body>
