@@ -29,10 +29,14 @@ func alphaMsgChk(in chan string, out chan string) {
 				// Data is ready to be read.
 				if dta == "LIST PACK" {
 					rmsg := ""
-					for nitm := range packList {
-						rmsg = strings.Join([]string{rmsg, packList[nitm].Identifier, "|", packList[nitm].URI, "|", packList[nitm].Lastseenat.String(), ","}, "")
+					if len(packList) > 0 {
+						for nitm := range packList {
+							rmsg = strings.Join([]string{rmsg, packList[nitm].Identifier, "|", packList[nitm].URI, "|", packList[nitm].Lastseenat.String(), ","}, "")
+						}
+						rmsg = rmsg[:len(rmsg)-1]
+					} else {
+						rmsg = "EMPTY"
 					}
-					rmsg = rmsg[:len(rmsg)-1]
 					out <- rmsg
 				} else if strings.Contains(dta, "SERVER BANISH") {
 					cname := strings.Replace(dta, "SERVER BANISH ", "", 1)

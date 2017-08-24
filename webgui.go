@@ -59,7 +59,9 @@ func getNodeList() []node {
 	webOutChannel <- "LIST PACK"
 
 	rawResult := <-webInChannel
-
+	if rawResult == "EMPTY" {
+		return result
+	}
 	nodeArray := strings.Split(rawResult, ",")
 	for n := range nodeArray {
 
